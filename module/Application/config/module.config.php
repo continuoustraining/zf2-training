@@ -20,6 +20,39 @@ return array(
                     ),
                 ),
             ),
+            'user' => array(
+                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'options' => array(
+                    'route'    => '/user',
+                    'defaults' => array(
+                        'controller' => 'Application\Controller\User',
+                        'action'     => 'list',
+                    ),
+                ),
+                'may_terminate' => true,
+                'child_routes' => [
+                    'edit' => array(
+                        'type' => 'Segment',
+                        'options' => array(
+                            'route'    => '/[:id]',
+                            'defaults' => array(
+                                'controller' => 'Application\Controller\User',
+                                'action'     => 'edit',
+                            ),
+                        ),
+                    ),
+                    'add' => array(
+                        'type' => 'Zend\Mvc\Router\Http\Literal',
+                        'options' => array(
+                            'route'    => '/add',
+                            'defaults' => array(
+                                'controller' => 'Application\Controller\User',
+                                'action'     => 'add',
+                            ),
+                        ),
+                    ),
+                ]
+            ),
             // The following is a route to simplify getting started creating
             // new controllers and actions without needing to create a new
             // module. Simply drop new controllers in, and you can access them
@@ -60,6 +93,22 @@ return array(
         'factories' => array(
             'translator' => 'Zend\Mvc\Service\TranslatorServiceFactory',
         ),
+        'aliases' => array(
+            'entityManager' => 'Doctrine\ORM\EntityManager'
+        ),
+        'invokables' => [
+            'usermanager' => 'Application\Service\UserManager'
+        ],
+        'initializers' => [
+            function ($instance, \Zend\ServiceManager\ServiceLocatorInterface $sm) {
+                if ($instance instanceof \Application\Service\UserManager) {
+                    $repository = $sm->get('Doctrine\ORM\EntityManager')
+                        ->getRepository('Application\Entity\User');
+                    
+                    $instance->setRepository($repository);
+                }
+            }
+        ]
     ),
     'translator' => array(
         'locale' => 'en_US',
@@ -73,9 +122,20 @@ return array(
     ),
     'controllers' => array(
         'invokables' => array(
-            'Application\Controller\Index' => 'Application\Controller\IndexController'
+            'Application\Controller\Index' => 'Application\Controller\IndexController',
+            'Application\Controller\User' => 'Application\Controller\UserController'
         ),
     ),
+
+    'view_helpers'    =>
+        [
+            'invokables' =>
+                [
+                    'buildId'     => 'Application\View\Helper\BuildId',
+                    'reference'   => 'Application\View\Helper\Reference',
+                    'commit'      => 'Application\View\Helper\Commit',
+                ]
+        ],
 
     'view_manager' => array(
         'display_not_found_reason' => true,
@@ -100,4 +160,34 @@ return array(
             ),
         ),
     ),
+    'doctrine' =>
+        [
+            'driver' =>
+                [
+                    'application_driver' =>
+                        [
+                            'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
+                            'cache' => 'array',
+                            'paths' => [ dirname(__DIR__) . '/src' ]
+                        ],
+                    'orm_default' =>
+                        [
+                            'drivers' =>
+                                [
+                                    'Application\Entity' => 'application_driver',
+                                ]
+                        ]
+                ],
+            'configuration' =>
+                [
+                    'orm_default' =>
+                        [
+                            'generate_proxies' => false,
+                            'metadata_cache' => 'array',
+                            'query_cache' => 'array',
+                            'result_cache' => 'array',
+                            'driver' => 'orm_default'
+                        ]
+                ],
+        ],
 );
