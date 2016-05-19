@@ -1,6 +1,7 @@
 ZendSkeletonApplication
 =======================
 
+
 [![Build Status](https://status.continuousphp.com/git-hub/continuoustraining/zf2-skeleton?token=4d76a939-6886-462d-b9af-8e6cc499670e&branch=master)](https://continuousphp.com/git-hub/continuoustraining/zf2-skeleton)
 
 Introduction
