@@ -1,5 +1,4 @@
 <?php
-
 return [
     'doctrine' => [
         'connection' => [
@@ -24,4 +23,3 @@ return [
         ]
     ]
 ];
-

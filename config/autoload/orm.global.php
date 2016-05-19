@@ -1,16 +1,15 @@
 <?php
-
 return [
     'doctrine' => [
         'connection' => [
             'orm_default' => [
                 'driverClass' => 'Doctrine\DBAL\Driver\PDOMySql\Driver',
                 'params' => [
-                    'host' => '',
+                    'host' => 'localhost',
                     'user' =>'root',
                     'password' => '',
                     'dbname' => 'skeleton'
-                ]
+                ],
             ]
         ],
         'migrations_configuration' => [
@@ -19,8 +18,7 @@ return [
                 'name' => 'Skeleton',
                 'namespace' => 'DoctrineMigrations',
                 'table' => 'doctrine_migration_versions',
-            ]
-        ]
-    ]
+            ],
+        ],
+    ],
 ];
-
