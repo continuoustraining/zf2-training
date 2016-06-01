@@ -59,12 +59,19 @@
 
     <!-- Migrate Database -->
     <target name="migrate-db" description="Update the database version">
-        <exec command="${doctrine.bin} migrations:migrate --no-interaction" passthru="true"/>
-        <exec command="${doctrine.bin} orm:clear-cache:metadata" passthru="true"/>
-        <exec command="${doctrine.bin} orm:clear-cache:query" passthru="true"/>
+        <exec command="${doctrine.bin} migrations:migrate --no-interaction"
+              outputProperty="doctrine.output"/>
+        <echo msg="${doctrine.output}" />
+        <if>
+            <contains string="${doctrine.output}" substring="Could not find any migrations to execute." />
+            <else>
+                <exec command="${doctrine.bin} orm:clear-cache:metadata" passthru="true"/>
+                <exec command="${doctrine.bin} orm:clear-cache:query" passthru="true"/>
+            </else>
+        </if>
     </target>
 
-	<!-- generate config -->
+    <!-- generate config -->
     <target name="generate-config">
 
         <copy todir="${project.basedir}/config"
