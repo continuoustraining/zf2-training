@@ -10,8 +10,18 @@
     </if>
     <property file="${project.basedir}/build.properties" />
     
-    <property name="cf.filteredStackName"
-              value="${cf.stackName}" />
+	<if>
+			<isset property="continuousphp.pr" />
+			<then>
+				<echo message="switching to PR stack" />
+				<property name="cf.filteredStackName"
+						  value="${cf.stackName}-${continuousphp.pr}" />
+			</then>
+			<else>
+			    <property name="cf.filteredStackName"
+			              value="${cf.stackName}" />
+			</else>
+	</if>
     
     <target name="help" description="List available targets">
         <exec executable="vendor/bin/phing"
@@ -45,7 +55,7 @@
             <ec2TagFilter key="env" value="${cf.filteredStackName}" />
         </aws-deploy-deployment-group>
     </target>
-
+    
     <!-- create database -->
     <target name="init-db" description="Create Database and Grants">
         <mkdir dir="${project.basedir}/data/db"/>
