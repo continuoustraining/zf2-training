@@ -55,8 +55,7 @@
             <ec2TagFilter key="env" value="${cf.filteredStackName}" />
         </aws-deploy-deployment-group>
     </target>
-
-
+    
     <!-- create database -->
     <target name="init-db" description="Create Database and Grants">
         <mkdir dir="${project.basedir}/data/db"/>
