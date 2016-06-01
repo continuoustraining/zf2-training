@@ -20,6 +20,55 @@
     <target name="provision-stack"
             description="Provision a stack on AWS" />
     
+	<target name="gererate-config" description="Setup external dependencies and migrate data">
+		<copy todir="${project.basedir}/config" overwrite="true">
+		  <fileset dir="${project.basedir}/config">
+		    <include name="**/*local.php.dist" />
+		  </fileset>
+		  <mapper type="glob" from="*.local.php.dist" to="*.local.php"></mapper>
+			<filterchain>
+				<replacetokens>
+					<!-- a partir build.properties -->
+						<token key="db.host" value="${db.host}" />
+						<token key="db.port" value="${db.port}" />
+						<token key="db.username" value="${db.username}" />
+						<token key="db.password" value="${db.password}" />
+						<token key="db.dbname" value="${db.dbname}" />						
+				</replacetokens>
+			</filterchain>
+		</copy>
+	 </target>
+	
     <target name="setup"
-            description="Setup external dependencies and migrate data"/>
+    		depends="gererate-config, init-db, doctrine-migration"
+			description="Setup external dependencies and migrate data">
+    </target>
+	
+	<target name="init-db" description="Create Database and Grants">
+	        <mkdir dir="${project.basedir}/data/db"/>
+	        <echo file="${project.basedir}/data/db/create.sql">
+	            CREATE DATABASE IF NOT EXISTS ${db.dbname};
+	        </echo>
+	        
+	        <pdosqlexec url="mysql:host=${db.host}"
+	                    userid="${db.username}"
+	                    password="${db.password}">
+	            <transaction src="${project.basedir}/data/db/create.sql"/>
+	        </pdosqlexec>
+	        
+	        <delete dir="${project.basedir}/data/db" quiet="true"/>
+	    </target>
+	
+	<target name="doctrine-migration">
+		<exec command="${doctrine.bin} migrations:migrate --no-interaction"
+		      outputProperty="doctrine.output"/>
+		<echo msg="${doctrine.output}" />
+		<if>
+            <contains string="${doctrine.output}" substring="could not find any migrations" />
+            <else>
+                <exec command="${doctrine.bin} orm:clear-cache:metadata" passthru="true" />
+                <exec command="${doctrine.bin} orm:clear-cache:query" passthru="true" />
+            </else>
+        </if>
+	</target>
 </project>
