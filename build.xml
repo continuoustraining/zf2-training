@@ -10,8 +10,18 @@
     </if>
     <property file="${project.basedir}/build.properties" />
     
-    <property name="cf.filteredStackName"
-              value="${cf.stackName}" />
+    <if>
+        <isset property="continuousphp.pr" />
+        <then>
+            <echo message="Switching to PR stack" />
+            <property name="cf.filteredStackName"
+                      value="${cf.stackName}-${continuousphp.pr}" />
+        </then>
+        <else>
+            <property name="cf.filteredStackName"
+                      value="${cf.stackName}" />
+        </else>
+    </if>
     
     <target name="help" description="List available targets">
         <exec executable="vendor/bin/phing"
