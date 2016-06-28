@@ -7,4 +7,4 @@ do
 done
 
 vendor/bin/phing -propertyfile /usr/local/etc/skeleton/skeleton.ini setup
-chown -R apache:apache /var/www/html/ *
+chown -R apache:apache /var/www/html/*
