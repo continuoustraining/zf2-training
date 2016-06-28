@@ -10,11 +10,40 @@
     </if>
     <property file="${project.basedir}/build.properties" />
     
+    <property name="cf.filteredStackName"
+              value="${cf.stackName}" />
+    
     <target name="help" description="List available targets">
         <exec executable="vendor/bin/phing"
               passthru="true">
             <arg value="-l"/>
         </exec>
+    </target>
+    
+    <target name="setup-aws">
+        <aws-config region="${aws.region}" profile="${aws.profile}" />
+    </target>
+
+    <target name="run-stack">
+        <aws-cf-runstack
+            name="demo-${cf.filteredStackName}"
+            updateOnConflict="true"
+            capabilities="CAPABILITY_IAM"
+            templatePath="./infra/single-server.template">
+            <param name="KeyName" value="${cf.KeyName}" />
+            <param name="env" value="${cf.filteredStackName}" />
+        </aws-cf-runstack>
+    </target>
+    
+    <target name="setup-deployment-group">
+        <aws-deploy-deployment-group
+            name="${cf.filteredStackName}"
+            updateOnConflict="true"
+            deploymentConfigName="CodeDeployDefault.OneAtATime"
+            serviceRole="${deploy.serviceRole}"
+            application="${deploy.applicationName}">
+            <ec2TagFilter key="env" value="${cf.filteredStackName}" />
+        </aws-deploy-deployment-group>
     </target>
 
     <!-- create database -->
@@ -66,7 +95,8 @@
     </target>
     
     <target name="provision-stack"
-            description="Provision a stack on AWS" />
+            description="Provision a stack on AWS"
+            depends="setup-aws, run-stack, setup-deployment-group" />
     
     <target name="setup"
             description="Setup external dependencies and migrate data"
