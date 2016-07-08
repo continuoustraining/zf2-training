@@ -11,6 +11,29 @@ use Application\Entity\User;
  */
 class UserTest extends \PHPUnit_Framework_TestCase
 {
+
+    public function getSetterExamples()
+    {
+        return [
+            ['fred', 'setFirstname', 'firstname'],
+            ['toto', 'setLastname', 'lastname'],
+        ];
+    } 
+    
+    /**
+     * @dataProvider getSetterExamples
+     * @param $value
+     * @param $method
+     * @param $attribute
+     */
+    public function testSettersActuallySetTheRightProperty($value, $method, $attribute)
+    {
+        $user = new User();
+        
+        $this->assertSame($user, $user->$method($value));
+        $this->assertAttributeSame($value, $attribute, $user);
+    }
+    
     public function testIdGetterActuallyReturnIdProperty()
     {
         $user = new User();
