@@ -8,7 +8,6 @@
 
 namespace Application\Service;
 
-
 use Application\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -75,8 +74,8 @@ class UserManager
         if ($user->getTemporaryAvatar()) {
             $this->fileStorage->filePutContent(
                 '/' . $user->getId() . '/' . basename($user->getTemporaryAvatar()),
-                file_get_contents($user->getTemporaryAvatar()
-            ));
+                file_get_contents($user->getTemporaryAvatar())
+            );
         }
         
         $this->entityManager->persist($user);

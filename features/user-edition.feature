@@ -9,3 +9,5 @@ Feature: User edition
     | /user/ | %temporaryUser% |
     Then the "Firstname" field should contain "Fred"
     And the "Lastname" field should contain "Dewinne"
+
+    

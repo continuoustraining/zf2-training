@@ -8,7 +8,6 @@
 
 namespace Application\Validator;
 
-
 class EmailAddress
 {
     public function isValid($address)

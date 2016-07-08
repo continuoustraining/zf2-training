@@ -3,4 +3,11 @@
     <description>Training Coding standard</description>
     <rule ref="PSR2"/>
     <file>module/Application/src</file>
+    <arg name="extensions" value="php"/>
+    <exclude-pattern>init_autoloader.php</exclude-pattern>
+    <exclude-pattern>features/**</exclude-pattern>
+    <exclude-pattern>config/**</exclude-pattern>
+    <exclude-pattern>data/**</exclude-pattern>
+    <exclude-pattern>public/**</exclude-pattern>
+    <exclude-pattern>module/Application/tests/**</exclude-pattern>
 </ruleset>
