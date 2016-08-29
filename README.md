@@ -118,3 +118,5 @@ it should look something like below:
     }
 
 Restart the nginx, now you should be ready to go!
+
+CCO - Training - 2016
