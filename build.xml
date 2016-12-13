@@ -17,6 +17,33 @@
         </exec>
     </target>
 
+    <!-- create database -->
+    <target name="init-db" description="Create Database and Grants">
+        <mkdir dir="${project.basedir}/data/db"/>
+        <echo file="${project.basedir}/data/db/create.sql">
+            CREATE DATABASE IF NOT EXISTS ${db.dbname};
+        </echo>
+        <pdosqlexec url="mysql:host=${db.host}"
+                    userid="${db.username}" password="${db.password}">
+            <transaction src="${project.basedir}/data/db/create.sql"/>
+        </pdosqlexec>
+        <delete dir="${project.basedir}/data/db" quiet="true"/>
+    </target>
+
+    <!-- Migrate Database -->
+    <target name="migrate-db" description="Update the database version">
+        <exec command="${doctrine.bin} migrations:migrate -n --ansi"
+              passthru="true"
+              returnProperty="doctrine.exitCode"/>
+        <if>
+            <equals arg1="${doctrine.exitCode}" arg2="4" />
+            <else>
+                <exec command="${doctrine.bin} orm:clear-cache:metadata" passthru="true"/>
+                <exec command="${doctrine.bin} orm:clear-cache:query" passthru="true"/>
+            </else>
+        </if>
+    </target>
+
     <!-- generate config -->
     <target name="generate-config">
 
@@ -44,5 +71,5 @@
     
     <target name="setup"
             description="Setup external dependencies and migrate data"
-            depends="generate-config"/>
+            depends="generate-config, init-db, migrate-db"/>
 </project>
